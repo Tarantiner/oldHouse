@@ -12,7 +12,7 @@
 SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
 DUPEFILER_CLASS = 'scrapy_reids.dupefilter.RFPDUPEFILTER'
 SCHEDULER_PERSIST = True
-REDIS_URL = 'redis://root@chen123@192.168.199.128:6379'
+REDIS_URL = 'redis://root:chen123@192.168.199.128:6379'
 SCHEDULER_FLUSH_ON_START = False  # 即是默认值，不要重新爬取
 
 BOT_NAME = 'oldHouse'
@@ -90,7 +90,7 @@ ITEM_PIPELINES = {
 #AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 AUTOTHROTTLE_START_DELAY = 2
-# The maximum download delay to be set in case of high latencies
+# The maximum download delay to be set in case of high laten
 #AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
