@@ -7,58 +7,8 @@
 
 import random
 import json
-import time
 from scrapy import signals
 from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
-
-
-class MyUserAgentMiddleWare(UserAgentMiddleware):
-    """to do"""
-
-    @staticmethod
-    def get_ua():
-        return json.load(open('UserAgent.json', 'r', encoding='utf-8'))
-
-    def process_request(self, request, spider):
-        ua_lis = self.get_ua()
-        ua = random.choice(ua_lis)
-        # ua.update({'Referer': 'https://bj.58.com/ershoufang/'})
-        request.headers.update({'User-Agent': ua, 'Referer': 'https://bj.58.com/ershoufang/'})
-        return None
-
-
-class MyProxyMiddleWare(object):
-
-    @staticmethod
-    def get_proxy():
-        return json.load(open('proxy.json', 'r', encoding='utf-8'))
-
-    def process_request(self, request, spider):
-        proxy_lis = self.get_proxy()
-        request.meta['proxy'] = random.choice(proxy_lis)
-        return None
-
-count = 0
-
-
-class RandomDelayMiddleware(object):
-    def __init__(self, delay):
-        self.delay = delay
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        delay = crawler.settings.get("RANDOM_DELAY", 10)
-        if not isinstance(delay, int):
-            raise ValueError("RANDOM_DELAY need a int")
-        return cls(delay)
-
-    def process_request(self, request, spider):
-        global count
-        delay = random.randint(0, self.delay)
-        spider.logger.debug("### random delay: %s s ###" % delay)
-        time.sleep(delay)
-        count += 1
-        spider.logger.error('在处理第%s个请求%s秒' % (count, delay))
 
 
 class OldhouseSpiderMiddleware(object):
@@ -107,6 +57,35 @@ class OldhouseSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class MyUserAgentMiddleWare(UserAgentMiddleware):
+    # provide user-agent for each request
+
+    @staticmethod
+    def get_ua():
+        return json.load(open('oldHouse/service/UserAgent.json', 'r', encoding='utf-8'))
+
+    def process_request(self, request, spider):
+        # fetch a random user-agent from existing user-agent list
+        ua_lis = self.get_ua()
+        ua = random.choice(ua_lis)
+        print('useragent', ua)
+        request.headers.update({'User-Agent': ua, 'Referer': 'https://bj.58.com/ershoufang/'})
+        return None
+
+
+class MyProxyMiddleWare(object):
+
+    @staticmethod
+    def get_proxy():
+        return json.load(open('oldHouse/service/proxy.json', 'r', encoding='utf-8'))
+
+    def process_request(self, request, spider):
+        proxy_lis = self.get_proxy()
+        request.meta['proxy'] = random.choice(proxy_lis)
+        print('proxy', request.meta['proxy'])
+        return None
 
 
 class OldhouseDownloaderMiddleware(object):
