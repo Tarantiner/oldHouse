@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 # Scrapy settings for oldHouse project
 #
 # For simplicity, this file contains only settings considered important or
@@ -10,7 +11,9 @@
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 # The follwings are configurations for redis
 SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
-DUPEFILER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
+DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
+
+# 所有电脑配置去重， 这个也是重写了scrapy内置的去重。
 SCHEDULER_PERSIST = True
 REDIS_URL = 'redis://root:chen123@192.168.199.128:6379'
 SCHEDULER_FLUSH_ON_START = False  # 即是默认值，不要重新爬取
