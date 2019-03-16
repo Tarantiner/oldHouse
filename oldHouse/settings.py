@@ -10,7 +10,7 @@
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 # The follwings are configurations for redis
 SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
-DUPEFILER_CLASS = 'scrapy_reids.dupefilter.RFPDUPEFILTER'
+DUPEFILER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
 SCHEDULER_PERSIST = True
 REDIS_URL = 'redis://root:chen123@192.168.199.128:6379'
 SCHEDULER_FLUSH_ON_START = False  # 即是默认值，不要重新爬取
