@@ -15,6 +15,7 @@ class ProxyHandler:
     how to get proxies, I'll recommend a website 'https://ip.ihuan.me/ti.html', it save me much time crawling proxies,
     most important, it's free!
     """
+    count = 0
     p_lis = []
     proxy_lis = []
     HEADERS = {
@@ -42,7 +43,7 @@ class ProxyHandler:
         proxies = {'https': 'https://%s' % proxy}
         try:
             res = requests.get(url=test_url, headers=headers, proxies=proxies, timeout=3)
-            print('valid', proxies, res.status_code)
+            self.count += 1
             return proxy
         except:
             # print('invalid', proxy)
@@ -68,6 +69,7 @@ class ProxyHandler:
         for proxy in self.proxy_lis:
             t.submit(self.tes_proxy, proxy).add_done_callback(self.save_valid_proxy_lis)
         t.shutdown()
+        print(f'fetch{self.count}valid proxies.')
 
     def run(self):
         """

@@ -17,7 +17,6 @@ class OldhouseItem(Item):
     type = Field()
     decoration = Field()
     build_year = Field()
-    price = Field()
     sale_point = Field()
 
 
