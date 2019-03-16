@@ -29,5 +29,12 @@ NEWSPIDER_MODULE = 'oldHouse.spiders'
 MONGO_URI = 'localhost'
 MONGO_DATABASE = 'old58House'
 
+###################################################################################
+# widget whether test each proxy before crawling.
+# if True, it cost much time when starting project, but more fluently when working,
+# if False, it cost less time when starting project, but may less efficient when working.
+# set True recommended
+TEST_PROXY = True
+
 
 

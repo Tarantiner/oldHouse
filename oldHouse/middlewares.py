@@ -70,7 +70,6 @@ class MyUserAgentMiddleWare(UserAgentMiddleware):
         # fetch a random user-agent from existing user-agent list
         ua_lis = self.get_ua()
         ua = random.choice(ua_lis)
-        print('useragent', ua)
         request.headers.update({'User-Agent': ua, 'Referer': 'https://bj.58.com/ershoufang/'})
         return None
 
@@ -84,7 +83,6 @@ class MyProxyMiddleWare(object):
     def process_request(self, request, spider):
         proxy_lis = self.get_proxy()
         request.meta['proxy'] = random.choice(proxy_lis)
-        print('proxy', request.meta['proxy'])
         return None
 
 

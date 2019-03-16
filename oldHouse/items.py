@@ -10,7 +10,6 @@ from scrapy import Field, Item
 
 class OldhouseItem(Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
     title = Field()
     addr = Field()
     area = Field()
