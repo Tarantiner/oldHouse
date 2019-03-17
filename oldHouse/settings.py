@@ -23,7 +23,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 ###################################################################################
 # db configurations
-REDIS_URL = 'redis://root:chen123@192.168.199.128:6379'
+REDIS_URL = 'redis://name:password@ip:port'
 SPIDER_MODULES = ['oldHouse.spiders']
 NEWSPIDER_MODULE = 'oldHouse.spiders'
 MONGO_URI = 'localhost'
