@@ -33,7 +33,7 @@
 
 
 ### 启动项目
-- ！！！本项目需要手动生成代理列表，务必在启动前运行oldHouse/service/文件
+- ！！！本项目需要手动生成代理列表，务必在启动前运行oldHouse/service/protester/protester.py文件
 - 分别在各台主机项目目录下，在命令行输入：scrapy crawl old58House，程序启动
 
 

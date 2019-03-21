@@ -3,6 +3,8 @@
 ###################################################################################
 # scrapy configurations
 BOT_NAME = 'oldHouse'
+SPIDER_MODULES = ['oldHouse.spiders']
+NEWSPIDER_MODULE = 'oldHouse.spiders'
 SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
 DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
 SCHEDULER_PERSIST = True
@@ -24,8 +26,6 @@ DOWNLOADER_MIDDLEWARES = {
 ###################################################################################
 # db configurations
 REDIS_URL = 'redis://name:password@ip:port'
-SPIDER_MODULES = ['oldHouse.spiders']
-NEWSPIDER_MODULE = 'oldHouse.spiders'
 MONGO_URI = 'localhost'
 MONGO_DATABASE = 'old58House'
 
