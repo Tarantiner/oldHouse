@@ -37,5 +37,5 @@ class MongoPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].update({'url_token': item['title']}, dict(item), True)
+        self.db[self.collection_name].update({'title': item.get('title')}, {'$set': dict(item)}, True)
         return item

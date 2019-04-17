@@ -10,7 +10,7 @@ class Old58houseSpider(scrapy.Spider):
     base_url = 'https://bj.58.com'
 
     def start_requests(self):
-        yield scrapy.Request(self.start_url, callback=self.parse_urls)
+        yield scrapy.Request(self.start_url, callback=self.parse_urls, meta={'dont_redirect': True})
 
     def parse_urls(self, response):
         urls = response.xpath('//h2[@class="title"]/a/@href').extract()
@@ -19,11 +19,16 @@ class Old58houseSpider(scrapy.Spider):
                 url = url.split('?')[0]
             if not url.startswith('https:'):
                 url = 'https:' + url
+            if 'zd_p' in url:
+                yield scrapy.Request(url, callback=self.parse_detail)
+            elif 'zd_p' not in url:
+                yield scrapy.Request(url, callback=self.parse_detail, meta={'dont_redirect': True})
+
             yield scrapy.Request(url, callback=self.parse_detail)
-        new_url = response.xpath('//a[@class="next"]/@href').extract_first()
-        if new_url:
-            next_page_url = self.base_url + new_url
-            yield scrapy.Request(next_page_url, callback=self.parse_urls)
+        # new_url = response.xpath('//a[@class="next"]/@href').extract_first()
+        # if new_url:
+        #     next_page_url = self.base_url + new_url
+        #     yield scrapy.Request(next_page_url, callback=self.parse_urls)
 
     def parse_detail(self, response):
         title = response.xpath('//div[4]/div[1]/h1/text()').extract_first()
