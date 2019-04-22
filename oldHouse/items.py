@@ -11,6 +11,7 @@ from scrapy import Field, Item
 class OldhouseItem(Item):
     # define the fields for your item here like:
     title = Field()
+    price = Field()
     addr = Field()
     area = Field()
     type = Field()

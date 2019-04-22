@@ -1,44 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from scrapy.downloadermiddlewares.redirect import RedirectMiddleware
-from scrapy.downloadermiddlewares.retry import RetryMiddleware
 ###################################################################################
 # scrapy configurations
 BOT_NAME = 'oldHouse'
 SPIDER_MODULES = ['oldHouse.spiders']
 NEWSPIDER_MODULE = 'oldHouse.spiders'
-# SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
-# DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
-# SCHEDULER_PERSIST = True
-# SCHEDULER_FLUSH_ON_START = False
 ROBOTSTXT_OBEY = False
-DOWNLOAD_DELAY=1
-# CONCURRENT_REQUESTS = 32
-# CONCURRENT_REQUESTS_PER_IP = 2
-RETRY_TIMES = 5
-ITEM_PIPELINES = {
-   'oldHouse.pipelines.MongoPipeline': 300,
-}
-DOWNLOADER_MIDDLEWARES = {
-    'oldHouse.middlewares.OldhouseDownloaderMiddleware': 543,
-    'oldHouse.middlewares.MyProxyMiddleWare': 542,
-    'oldHouse.middlewares.MyUserAgentMiddleWare': 541,
-    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,
-    'oldHouse.middlewares.MyRedirectMiddleware': 601,
-    'oldHouse.middlewares.MyRetryMiddleware': 551,
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-}
+RETRY_TIMES = 8
 
-# LOG_FILE = "mySpider.log"
-# LOG_LEVEL = "DEBUG"
-
+###################################################################################
+# to improve the performance settings
+CLOSESPIDER_ITEMCOUNT = 50
+# DOWNLOAD_DELAY = 0.5
+CONCURRENT_REQUESTS = 16
+DOWNLOAD_TIMEOUT = 25
 
 ###################################################################################
 # db configurations
-# REDIS_URL = 'redis://name:password@ip:port'
 MONGO_URI = 'localhost'
-MONGO_DATABASE = 'old58House'
+MONGO_DATABASE = 'old58Houser'
 
 ###################################################################################
 # widget whether test each proxy before crawling.
@@ -46,6 +26,34 @@ MONGO_DATABASE = 'old58House'
 # if False, it cost less time when starting project, but may less efficient when working.
 # set True recommended
 TEST_PROXY = True
+TEST_URL = 'https://bj.58.com/'
+PROXY_JSON_FILE = 'oldHouse/service/proxy.json'
+
+###################################################################################
+# log configurations
+# LOG_FILE = "mySpider.log"
+# LOG_LEVEL = "DEBUG"
+
+###################################################################################
+# pipeline
+ITEM_PIPELINES = {
+   'oldHouse.pipelines.MongoPipeline': 300,
+}
+
+###################################################################################
+# middleware
+DOWNLOADER_MIDDLEWARES = {
+    'oldHouse.middlewares.OldhouseDownloaderMiddleware': 543,
+    'oldHouse.middlewares.MyProxyMiddleWare': 542,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'oldHouse.middlewares.MyUserAgentMiddleWare': 541,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+    'oldHouse.middlewares.MyRetryMiddleware': 551,
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,
+    'oldHouse.middlewares.MyRedirectMiddleware': 601,
+}
+
+
 
 
 

@@ -7,15 +7,16 @@
 
 import random
 import json
-from scrapy import signals
-from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
-from scrapy.contrib.downloadermiddleware.retry import RetryMiddleware
-from scrapy.utils.response import response_status_message
-from scrapy import Request
-from scrapy.downloadermiddlewares.redirect import BaseRedirectMiddleware
-from six.moves.urllib.parse import urljoin
 from w3lib.url import safe_url_string
-from oldHouse.spiders.old58House import Old58houseSpider
+from six.moves.urllib.parse import urljoin
+from scrapy import signals
+from scrapy import Request
+from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
+from scrapy.downloadermiddlewares.redirect import RedirectMiddleware
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from twisted.internet.error import TimeoutError, DNSLookupError, \
+        ConnectionRefusedError, ConnectionDone, ConnectError, \
+        ConnectionLost, TCPTimedOutError
 
 
 class OldhouseSpiderMiddleware(object):
@@ -83,37 +84,34 @@ class MyUserAgentMiddleWare(UserAgentMiddleware):
 
 class MyProxyMiddleWare(object):
 
-    @staticmethod
-    def get_proxy():
-        return json.load(open('oldHouse/service/proxy.json', 'r', encoding='utf-8'))
-
     def process_request(self, request, spider):
-        proxy_lis = self.get_proxy()
-        request.meta['proxy'] = random.choice(proxy_lis)
+        proxy_lis = spider._proxy_lis
+        request.meta['proxy'] = 'https://' + random.choice(proxy_lis)
         return None
 
 
 class MyRetryMiddleware(RetryMiddleware):
 
-    def process_response(self, request, response, spider):
-        if request.meta.get('dont_retry', False):
-            return response
-        if response.status in self.retry_http_codes:
-            reason = response_status_message(response.status)
-            return self._retry(request, reason, spider) or response
-        if all([(response.status == 302), ('firewall' not in request.url), ('service' not in request.url)]):
-            print('*' * 30, response.status, response.url, request.url)
-            reason = response_status_message(response.status)
-            return self._retry(request, reason, spider)
-            # return Request(request.url, callback=Old58houseSpider.parse_detail, meta={'dont_redirect': True})
-        return response
+    EXCEPTIONS_TO_DEL_PROXY = (TimeoutError, ConnectionRefusedError, ConnectError, ConnectionLost, TCPTimedOutError)
+
+    def process_exception(self, request, exception, spider):
+        if isinstance(exception, self.EXCEPTIONS_TO_RETRY) \
+                and not request.meta.get('dont_retry', False):
+            if isinstance(exception, self.EXCEPTIONS_TO_DEL_PROXY):
+                ip_port = request.meta.get("proxy").replace("https://", '')
+                try:
+                    spider._proxy_lis.remove(ip_port)
+                except ValueError:
+                    spider.logger.debug(f'proxy{ip_port}: proxy had already been removed')
+            return self._retry(request, exception, spider)
 
 
-class MyRedirectMiddleware(BaseRedirectMiddleware):
+class MyRedirectMiddleware(RedirectMiddleware):
     """
     Handle redirection of requests based on response status
     and meta-refresh html tag.
     """
+
     def process_response(self, request, response, spider):
         if (request.meta.get('dont_redirect', False) or
                 response.status in getattr(spider, 'handle_httpstatus_list', []) or
@@ -122,27 +120,26 @@ class MyRedirectMiddleware(BaseRedirectMiddleware):
             return response
 
         allowed_status = (301, 302, 303, 307, 308)
+
         if 'Location' not in response.headers or response.status not in allowed_status:
             return response
 
         location = safe_url_string(response.headers['location'])
-        print('here is', location, response.status, response.url, request.url)
 
         redirected_url = urljoin(request.url, location)
 
         if response.status in (301, 307, 308) or request.method == 'HEAD':
             redirected = request.replace(url=redirected_url)
             return self._redirect(redirected, request, spider, response.status)
+
+        if 'firewall' in redirected_url:
+            # to avoid case1、case2：real_url -> firewall
+            return Request(request.url, callback=spider.parse_detail, meta=request.meta, dont_filter=True)
+
         if 'Jump' in redirected_url:
-            # 为防3类情况：fake_url -> jump_url -> jump_url -> jump_url放弃url
-            # spider.logger.debug('#'*50 + '33333333333333')
-            # print(redirected_url + '###\n' + request.url + '###\n' + response.status +response.url)
-            new_request = request.replace(url=redirected_url, method='GET', body='', meta={'max_retry_times': 5})  # 每次遇到这个跳转url都会加一次retry就是无线retry了
-        if 'Jump' not in redirected_url and 'firewall' not in redirected_url:
-            # 为防4类情况：fake_url -> jump_url -> real_url - > firewal，当拿到真的url，不允许重定向到firewall
-            # spider.logger.debug('#' * 50 + '44444444444444')
-            # print(redirected_url + '###\n' + request.url + '###\n' + response.status + response.url)
-            new_request = request.replace(url=redirected_url, method='GET', body='', meta={'dont_redirect': True, 'max_retry_times': 7})
+            # to avoid case3：fake_url -> jump_url -> jump_url -> jump_url放弃url
+            new_request = request.replace(url=redirected_url, method='GET', body='', meta=request.meta)  # 每次遇到这个跳转url都会加一次retry就是无线retry了
+
         else:
             new_request = self._redirect_request_using_get(request, redirected_url)
         return self._redirect(new_request, request, spider, response.status)

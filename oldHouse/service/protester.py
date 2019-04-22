@@ -4,8 +4,8 @@
 
 import json
 import requests
-from concurrent.futures.thread import ThreadPoolExecutor
 from scrapy.utils.project import get_project_settings
+from concurrent.futures.thread import ThreadPoolExecutor
 
 
 class ProxyHandler:
@@ -23,8 +23,9 @@ class ProxyHandler:
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
     }
 
-    def __init__(self, code):
+    def __init__(self, code, test_url):
         self.test_mode = code
+        self.test_url = test_url
 
     def get_proxy_lis(self):
         """
@@ -42,11 +43,10 @@ class ProxyHandler:
         :param proxy: proxy to be tested
         :return: proxy if valid else None
         """
-        test_url = 'https://bj.58.com/'
         headers = self.HEADERS
         proxies = {'https': 'https://%s' % proxy}
         try:
-            res = requests.get(url=test_url, headers=headers, proxies=proxies, timeout=3)
+            res = requests.get(url=self.test_url, headers=headers, proxies=proxies, timeout=3)
             self.p_count += 1
             return proxy
         except:
@@ -68,7 +68,7 @@ class ProxyHandler:
 
     def multi_test(self):
         # using thread pool to improve testing speed
-        t = ThreadPoolExecutor(10)
+        t = ThreadPoolExecutor(600)
         print('testing proxy, it will take several minutes......')
         for proxy in self.proxy_lis:
             t.submit(self.tes_proxy, proxy).add_done_callback(self.save_valid_proxy_lis)
@@ -91,7 +91,7 @@ class ProxyHandler:
 
 if __name__ == '__main__':
     SETTINGS = get_project_settings()
-    p = ProxyHandler(SETTINGS.get('TEST_PROXY'))
+    p = ProxyHandler(SETTINGS.get('TEST_PROXY'), SETTINGS.get('TEST_URL'))
     p.run()
 
 
