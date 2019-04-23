@@ -52,8 +52,3 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,
     'oldHouse.middlewares.MyRedirectMiddleware': 601,
 }
-
-
-
-
-
