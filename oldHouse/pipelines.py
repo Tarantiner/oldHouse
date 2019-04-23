@@ -18,24 +18,24 @@ class MongoPipeline(object):
     db = None
     collection_name = 'houseInfo'
 
-    def __init__(self, mongo_uri, mongo_db):
-        self.mongo_uri = mongo_uri
+    def __init__(self, mongo_url, mongo_db):
+        self.mongo_url = mongo_url
         self.mongo_db = mongo_db
 
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_url=crawler.settings.get('MONGO_URL'),
             mongo_db=crawler.settings.get('MONGO_DATABASE')
         )
 
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.client = pymongo.MongoClient(self.mongo_url)
         self.db = self.client[self.mongo_db]
 
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].update({'title': item.get('title')}, {'$set': dict(item)}, True)
+        self.db[self.collection_name].update({'url_token': item['title']}, dict(item), True)
         return item

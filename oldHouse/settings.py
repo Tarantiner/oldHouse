@@ -7,18 +7,22 @@ SPIDER_MODULES = ['oldHouse.spiders']
 NEWSPIDER_MODULE = 'oldHouse.spiders'
 ROBOTSTXT_OBEY = False
 RETRY_TIMES = 8
+SCHEDULER_PERSIST = True
+SCHEDULER_FLUSH_ON_START = False
+SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
+DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
 
 ###################################################################################
 # to improve the performance settings
-CLOSESPIDER_ITEMCOUNT = 50
 # DOWNLOAD_DELAY = 0.5
-CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS = 32
 DOWNLOAD_TIMEOUT = 25
 
 ###################################################################################
 # db configurations
-MONGO_URI = 'localhost'
+MONGO_URL = 'localhost'
 MONGO_DATABASE = 'old58Houser'
+REDIS_URL = 'redis://root:chen123@192.168.1.11:6379'
 
 ###################################################################################
 # widget whether test each proxy before crawling.
@@ -26,7 +30,7 @@ MONGO_DATABASE = 'old58Houser'
 # if False, it cost less time when starting project, but may less efficient when working.
 # set True recommended
 TEST_PROXY = True
-TEST_URL = 'https://bj.58.com/'
+TEST_URL = 'https://bj.58.com/ershoufang/'
 PROXY_JSON_FILE = 'oldHouse/service/proxy.json'
 
 ###################################################################################
@@ -47,8 +51,12 @@ DOWNLOADER_MIDDLEWARES = {
     'oldHouse.middlewares.MyProxyMiddleWare': 542,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'oldHouse.middlewares.MyUserAgentMiddleWare': 541,
-    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-    'oldHouse.middlewares.MyRetryMiddleware': 551,
+    # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+    # 'oldHouse.middlewares.MyRetryMiddleware': 551,
     'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,
     'oldHouse.middlewares.MyRedirectMiddleware': 601,
 }
+
+
+
+

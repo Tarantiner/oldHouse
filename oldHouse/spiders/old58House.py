@@ -10,6 +10,7 @@ class Old58houseSpider(scrapy.Spider):
     name = 'old58House'
     start_url = 'https://bj.58.com/ershoufang/'
     base_url = 'https://bj.58.com'
+    # redis_key = 'old_house'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,10 +43,10 @@ class Old58houseSpider(scrapy.Spider):
             request = scrapy.Request(url, callback=self.parse_detail, meta={'item': item})
             yield request
 
-        new_url = response.xpath('//a[@class="next"]/@href').extract_first()
-        if new_url:    # crawl more page
-            next_page_url = self.base_url + new_url
-            yield scrapy.Request(next_page_url, callback=self.parse_urls)
+        # new_url = response.xpath('//a[@class="next"]/@href').extract_first()
+        # if new_url:    # crawl more page
+        #     next_page_url = self.base_url + new_url
+        #     yield scrapy.Request(next_page_url, callback=self.parse_urls)
 
     def parse_detail(self, response):
         title = response.xpath('//div[4]/div[1]/h1/text()').extract_first()

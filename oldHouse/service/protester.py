@@ -69,7 +69,7 @@ class ProxyHandler:
     def multi_test(self):
         # using thread pool to improve testing speed
         t = ThreadPoolExecutor(600)
-        print('testing proxy, it will take several minutes......')
+        print('testing proxy, it will take some time......')
         for proxy in self.proxy_lis:
             t.submit(self.tes_proxy, proxy).add_done_callback(self.save_valid_proxy_lis)
         t.shutdown()
