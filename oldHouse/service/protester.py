@@ -46,7 +46,7 @@ class ProxyHandler:
         headers = self.HEADERS
         proxies = {'https': 'https://%s' % proxy}
         try:
-            res = requests.get(url=self.test_url, headers=headers, proxies=proxies, timeout=3)
+            res = requests.get(url=self.test_url, headers=headers, proxies=proxies, timeout=8)
             self.p_count += 1
             return proxy
         except:

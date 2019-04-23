@@ -3,6 +3,7 @@
 import json
 import scrapy
 from scrapy.utils.project import get_project_settings
+from six.moves.urllib.parse import urljoin
 from oldHouse.items import OldhouseItem
 
 
@@ -43,10 +44,10 @@ class Old58houseSpider(scrapy.Spider):
             request = scrapy.Request(url, callback=self.parse_detail, meta={'item': item})
             yield request
 
-        # new_url = response.xpath('//a[@class="next"]/@href').extract_first()
-        # if new_url:    # crawl more page
-        #     next_page_url = self.base_url + new_url
-        #     yield scrapy.Request(next_page_url, callback=self.parse_urls)
+        new_url = response.xpath('//a[@class="next"]/@href').extract_first()
+        if new_url:    # crawl more page
+            next_page_url = urljoin(self.base_url, new_url)
+            yield scrapy.Request(next_page_url, callback=self.parse_urls)
 
     def parse_detail(self, response):
         title = response.xpath('//div[4]/div[1]/h1/text()').extract_first()

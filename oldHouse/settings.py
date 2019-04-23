@@ -22,7 +22,7 @@ DOWNLOAD_TIMEOUT = 25
 # db configurations
 MONGO_URL = 'localhost'
 MONGO_DATABASE = 'old58Houser'
-REDIS_URL = 'redis://root:chen123@192.168.1.11:6379'
+REDIS_URL = 'redis://USER:PASSWORD@IP:PORT'
 
 ###################################################################################
 # widget whether test each proxy before crawling.
